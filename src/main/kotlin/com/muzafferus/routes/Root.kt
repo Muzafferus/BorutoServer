@@ -1,4 +1,4 @@
-package com.muzafferus.repository
+package com.muzafferus.routes
 
 import io.ktor.application.*
 import io.ktor.http.*
