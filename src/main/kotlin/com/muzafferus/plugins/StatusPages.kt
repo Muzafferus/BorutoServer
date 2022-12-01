@@ -16,7 +16,7 @@ fun Application.configureStatusPages() {
         }
         exception<AuthenticationException> {
             call.respond(
-                message = "We caught an exception. ",
+                message = "We caught an exception.",
                 status = HttpStatusCode.OK
             )
         }

@@ -82,8 +82,8 @@ class ApplicationTest {
                     val expected = ApiResponse(
                         success = true,
                         message = "OK",
-                        prevPage = calculatePage(page = page)[PREVIOUS_PAGE_KEY],
-                        nextPage = calculatePage(page = page)[NEXT_PAGE_KEY],
+                        prevPage = heroRepository.calculatePage(page = page)[PREVIOUS_PAGE_KEY],
+                        nextPage = heroRepository.calculatePage(page = page)[NEXT_PAGE_KEY],
                         heroes = heroes[page - 1]
                     )
                     val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
@@ -97,31 +97,6 @@ class ApplicationTest {
 
         }
     }
-
-
-    private fun calculatePage(page: Int): Map<String, Int?> {
-        var prevPage: Int? = page
-        var nextPage: Int? = page
-
-        if (page in 1..4) {
-            nextPage = nextPage?.plus(1)
-        }
-
-        if (page == 5) {
-            nextPage = null
-        }
-
-        if (page in 2..5) {
-            prevPage = prevPage?.minus(1)
-        }
-
-        if (page == 1) {
-            prevPage = null
-        }
-
-        return mapOf(PREVIOUS_PAGE_KEY to prevPage, NEXT_PAGE_KEY to nextPage)
-    }
-
 
     @ExperimentalSerializationApi
     @Test
@@ -179,6 +154,104 @@ class ApplicationTest {
                     NEXT_PAGE_KEY to if (page == 5) null else page + 1
                 )
                 val actual = heroRepository.calculatePage(page)
+
+                assertEquals(
+                    expected = expected,
+                    actual = actual
+                )
+            }
+        }
+    }
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access search heroes endpoint, query hero name, assert single hero result`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/boruto/heroes/search?name=sas").apply {
+                assertEquals(expected = HttpStatusCode.OK, actual = response.status())
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString()).heroes.size
+                assertEquals(expected = 1, actual = actual)
+            }
+        }
+    }
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access search heroes endpoint, query hero name, assert multiple hero result`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/boruto/heroes/search?name=sa").apply {
+                assertEquals(expected = HttpStatusCode.OK, actual = response.status())
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString()).heroes.size
+                assertEquals(expected = 3, actual = actual)
+            }
+        }
+    }
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access search heroes endpoint, query invalid name, assert empty list as a result`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/boruto/heroes/search?name=muzaffar").apply {
+                assertEquals(expected = HttpStatusCode.OK, actual = response.status())
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString()).heroes
+                assertEquals(expected = emptyList(), actual = actual)
+            }
+        }
+    }
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access search heroes endpoint, query an empty text, assert empty list as a result`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/boruto/heroes/search?name=").apply {
+                assertEquals(expected = HttpStatusCode.OK, actual = response.status())
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString()).heroes
+                assertEquals(expected = emptyList(), actual = actual)
+            }
+        }
+    }
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access non existing endpoint, assert not found`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/unknown").apply {
+                assertEquals(expected = HttpStatusCode.NotFound, actual = response.status())
+                assertEquals(expected = "Page not Found.", actual = response.content)
+            }
+        }
+    }
+
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access non existing endpoint 2, assert AuthenticationException`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/test2").apply {
+                assertEquals(expected = HttpStatusCode.OK, actual = response.status())
+                assertEquals(expected = "We caught an exception.", actual = response.content)
+            }
+        }
+    }
+
+
+    @ExperimentalSerializationApi
+    @Test
+    fun `access search heroes endpoint, query hero name, assert correct information`() {
+        withTestApplication(moduleFunction = Application::module) {
+            handleRequest(HttpMethod.Get, "/boruto/heroes/search?name=awa").apply {
+                assertEquals(
+                    expected = HttpStatusCode.OK,
+                    actual = response.status()
+                )
+                val expected = ApiResponse(
+                    success = true,
+                    message = "OK",
+                    prevPage = null,
+                    nextPage = null,
+                    heroes = arrayListOf(heroRepository.page3[0])
+                )
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
 
                 assertEquals(
                     expected = expected,
