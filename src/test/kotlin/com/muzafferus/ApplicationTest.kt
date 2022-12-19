@@ -44,14 +44,17 @@ class ApplicationTest {
                     expected = HttpStatusCode.OK,
                     actual = response.status()
                 )
+
+                val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
+
                 val expected = ApiResponse(
                     success = true,
                     message = "OK",
                     prevPage = null,
                     nextPage = 2,
-                    heroes = heroRepository.page1
+                    heroes = heroRepository.page1,
+                    lastUpdated = actual.lastUpdated
                 )
-                val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
 
                 assertEquals(
                     expected = expected,
@@ -79,14 +82,16 @@ class ApplicationTest {
                         expected = HttpStatusCode.OK,
                         actual = response.status()
                     )
+                    val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
+
                     val expected = ApiResponse(
                         success = true,
                         message = "OK",
                         prevPage = heroRepository.calculatePage(page = page)[PREVIOUS_PAGE_KEY],
                         nextPage = heroRepository.calculatePage(page = page)[NEXT_PAGE_KEY],
-                        heroes = heroes[page - 1]
+                        heroes = heroes[page - 1],
+                        lastUpdated = actual.lastUpdated
                     )
-                    val actual = Json.decodeFromString<ApiResponse>(response.content.toString())
 
                     assertEquals(
                         expected = expected,
