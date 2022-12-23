@@ -1,6 +1,7 @@
 package com.muzafferus.plugins
 
 import com.muzafferus.routes.getAllHeroes
+import com.muzafferus.routes.getAllHeroesAlternative
 import com.muzafferus.routes.root
 import com.muzafferus.routes.searchHeroes
 import io.ktor.application.*
@@ -12,6 +13,7 @@ fun Application.configureRouting() {
     routing {
         root()
         getAllHeroes()
+        getAllHeroesAlternative()
         searchHeroes()
 
         get("/test2") {
