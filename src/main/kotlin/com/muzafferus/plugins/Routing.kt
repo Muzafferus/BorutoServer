@@ -9,6 +9,7 @@ import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 import javax.naming.AuthenticationException
 
+//heroku ps:scale web=1  ===run app
 fun Application.configureRouting() {
     routing {
         root()
