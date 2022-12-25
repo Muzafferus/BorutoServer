@@ -1,7 +1,7 @@
 package com.muzafferus
 
 import com.muzafferus.plugins.*
-import io.ktor.application.*
+import io.ktor.server.application.*
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)

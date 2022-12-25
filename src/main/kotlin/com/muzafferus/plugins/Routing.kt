@@ -4,9 +4,9 @@ import com.muzafferus.routes.getAllHeroes
 import com.muzafferus.routes.getAllHeroesAlternative
 import com.muzafferus.routes.root
 import com.muzafferus.routes.searchHeroes
-import io.ktor.application.*
-import io.ktor.http.content.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.routing.*
 import javax.naming.AuthenticationException
 
 fun Application.configureRouting() {
