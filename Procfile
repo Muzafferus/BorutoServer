@@ -1,0 +1,1 @@
+web: build/install/com.muzafferus.borutoserver/bin/com.muzafferus.borutoserver
